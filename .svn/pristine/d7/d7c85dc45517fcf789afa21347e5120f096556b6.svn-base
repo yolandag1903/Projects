@@ -1,0 +1,59 @@
+<?php
+
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction()
+    {        
+        return $this->render('AppBundle:CashMachine:withdraw.html.twig');
+    }
+    
+    /**
+     * @Route("/withdraw", name="withdraw")
+     * @Method("POST")
+     * @Template("AppBundle:CashMachine:withdraw.html.twig")
+     */
+    public function withdrawAction(Request $request)
+    {
+        $withdraw = $request->get('withdraw'); 
+        $monto_retiro = $withdraw;
+        
+        $bill = array(100, 50 , 20, 10);
+         
+        $money_to_give = array(0);
+      
+        
+        if(($withdraw%$bill[3]) == 0){
+            for($i=0; $i<count($bill); $i++){               
+                $count = 0 ;
+                $money_to_give[$i] =0;
+                while($withdraw >= $bill[$i]){
+                    $count=$count+1;
+                    $money_to_give[$i]=$count.' de $'.$bill[$i];
+                    $withdraw=$withdraw-$bill[$i];                      
+                }                                             
+            }
+        }else{
+//            echo 'Debe ingresar un monto multiplo de 10';
+            $this->get('session')->getFlashBag()->set(
+                                                        'error',
+                                                        array(
+                                                            'title' => 'Error!',
+                                                            'message' => 'Debe ingresar un monto multiplo de 10.'
+                                                        )
+                                                    );
+        }                                            
+        return $this->render('AppBundle:CashMachine:withdraw.html.twig', array('money_to_give' => $money_to_give,
+                                                                               'monto_retiro'  => $monto_retiro));        
+    }
+}

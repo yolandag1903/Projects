@@ -1,0 +1,30 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Cash Machine</h1>
+    
+    <form action="{{ path('withdraw') }}" method="post">
+        <div >
+            <div>
+                <input type="text" id="card_number" name="card_number" maxlength="20" placeholder="Card number"/>
+            </div>
+            <div>
+                <input type="text" id="withdraw" name="withdraw" placeholder="Withdraw"/>
+            </div>                      
+        </div>
+        <div>                                                               
+            <button type="submit" name="enter">Enter</button>
+        </div>
+        {% if app.session.flashbag.has('error') %}
+            </br>{{ app.session.flashbag.get('error').0 }}<br/>
+        {% endif %}
+        {% if monto_retiro != NULL and money_to_give != NULL %}
+        <div>
+            </br>{{ "Usted retiró: $ " ~ monto_retiro ~ ", dispensado de la siguiente manera: "}}</br>
+            {% for i in 0..3 %}
+                {% if money_to_give[i] != 0 %} {{  money_to_give[i] }} </br>{% endif %}
+            {% endfor %}            
+        </div>
+        {% endif %}
+    </form>
+{% endblock %}
